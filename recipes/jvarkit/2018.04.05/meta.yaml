@@ -24,16 +24,35 @@ requirements:
       - wget
       - make
       - unzip
+      - awk
   run:
       - java-jdk >=8,<9
+      - awk
 
 test:
     commands:
-      - jvarkit vcffilterjdk -h
+      - jvarkit bam2raster -h
+      - jvarkit bam2svg -h
       - jvarkit bioalcidaejdk -h
-      - jvarkit samjdk -h
+      - jvarkit cytoband2svg -h
+      - jvarkit findavariation -h
+      - jvarkit groupbygene -h
+      - jvarkit illuminadir -h
+      - jvarkit indexcovjfx -h
+      - jvarkit lowresbam2raster -h
+      - jvarkit ngsfilessummary -h
       - jvarkit prettysam -h
+      - jvarkit sam2tsv -h
+      - jvarkit samjdk -h
+      - jvarkit tview -h
+      - jvarkit tviewserver -h
+      - jvarkit vcf2svg -h
       - jvarkit vcf2table -h
+      - jvarkit vcffilterjdk -h
+      - jvarkit vcfpeekvcf -h
+      - jvarkit vcfserver -h
+      - jvarkit vcffilterso -h
+      - jvarkit xsltstream -h
 
 extra:
     skip-lints:

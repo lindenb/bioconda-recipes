@@ -35,13 +35,13 @@ pass_args=""
 jar_name=""
 for arg in "$@"; do
     case $arg in
-        '-D'*)
+        '-J-D'*)
             jvm_prop_opts="$jvm_prop_opts $arg"
             ;;
-        '-XX'*)
+        '-J-XX'*)
             jvm_prop_opts="$jvm_prop_opts $arg"
             ;;
-         '-Xm'*)
+         '-J-Xm'*)
             jvm_mem_opts="$jvm_mem_opts $arg"
             ;;
          *)
@@ -67,13 +67,16 @@ pass_arr=($pass_args)
 if [ "${jar_name}" == "" ]
 then
 	 echo "jvarkit tool name missing"  1>&2
+	 echo "Available tools are:" 1>&2
+	 find "${JAR_DIR}" -type f -name "*.jar" -exec basename '{}' ';' | sed 's/\(\-fat\).jar$//' | sort | uniq 1>&2
 	 exit 1
 fi
 
 if [ ! -f "${JAR_DIR}/${jar_name}-fat.jar" ]
 then
-	 find "${JAR_DIR}" -type f -name "*.jar" 1>&2
 	 echo "jvarkit jar file '${JAR_DIR}/${jar_name}.jar' missing/not available in bioconda or check your arguments."  1>&2
+	 echo "Available tools are:" 1>&2
+	 find "${JAR_DIR}" -type f -name "*.jar" -exec basename '{}' ';' | sed 's/\(\-fat\).jar$//' | sort | uniq 1>&2
 	 exit 1
 fi
 
