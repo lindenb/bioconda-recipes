@@ -9,4 +9,4 @@ cp -v ${SRC_DIR}/dist/*.jar "${outdir}"
 
 cp "${RECIPE_DIR}/jvarkit.sh" "${outdir}/jvarkit"
 ln -s ${outdir}/jvarkit "${PREFIX}/bin"
-chmod 0755 "${PREFIX}/bin/jvarkit"
+chmod +x "${PREFIX}/bin/jvarkit"
