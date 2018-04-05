@@ -24,7 +24,6 @@ requirements:
       - wget
       - make
       - unzip
-      - awk
   run:
       - java-jdk >=8,<9
       - awk
