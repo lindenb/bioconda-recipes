@@ -1,0 +1,35 @@
+{% set commit = "7558ce9ef426737c5140951495477defaace4373" %} 
+{% set version = "2018.04.05" %} 
+
+about:
+  home: 'https://github.com/lindenb/jvarkit'
+  license: "MIT License"
+  summary: "Java utilities for Bioinformatics"
+
+package:
+  name: jvarkit
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  git_rev:  {{ commit }}
+  url: https://github.com/lindenb/jvarkit.git
+
+requirements:
+  build:
+      - java-jdk >=8,<9
+      - wget
+      - make
+  run:
+      - java-jdk >=8,<9
+
+test:
+    commands:
+      - jvarkit vcffilterjdk -h
+      - jvarkit bioalcidaejdk -h
+      - jvarkit samjdk -h
+      - jvarkit prettysam -h
+      - jvarkit vcf2table -h
+
