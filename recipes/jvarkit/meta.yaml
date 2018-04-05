@@ -1,5 +1,5 @@
-{% set commit = "7558ce9ef426737c5140951495477defaace4373" %} 
 {% set version = "2018.04.05" %} 
+{% set sha256 = "c9310a371f839f871e157bd2b584e6e2299b0d886f8eb820d1c319b0f06b3690" %}
 
 about:
   home: 'https://github.com/lindenb/jvarkit'
@@ -14,8 +14,9 @@ build:
   number: 0
 
 source:
-  git_rev:  {{ commit }}
-  url: https://github.com/lindenb/jvarkit.git
+  fn:  v{{ version }}.zip
+  sha256: {{ sha256 }}
+  url: https://github.com/lindenb/jvarkit/archive/v{{ version }}.zip
 
 requirements:
   build:
@@ -32,4 +33,8 @@ test:
       - jvarkit samjdk -h
       - jvarkit prettysam -h
       - jvarkit vcf2table -h
+
+extra:
+    skip-lints:
+      - uses_javajdk
 
