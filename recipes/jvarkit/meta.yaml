@@ -23,6 +23,7 @@ requirements:
       - java-jdk >=8,<9
       - wget
       - make
+      - unzip
   run:
       - java-jdk >=8,<9
 
