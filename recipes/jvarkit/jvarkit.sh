@@ -3,11 +3,6 @@
 
 
 set -eu -o pipefail
-
-# let's see what happends
-
-set -x
-
 set -o pipefail
 export LC_ALL=en_US.UTF-8
 
@@ -69,15 +64,15 @@ fi
 pass_arr=($pass_args)
 
 
-if [[ "${jar_name}" -eq "" ]]
+if [ "${jar_name}" -eq "" ]
 then
 	 echo "jvarkit tool name missing"  1>&2
 	 exit 1
 fi
 
-if [[ ! -f "${JAR_DIR}/${jar_name}.jar" ]]
+if [ ! -f "${JAR_DIR}/${jar_name}.jar" ]
 then
-	 echo "jvarkit jar file '$JAR_DIR/${jar_name}.jar' missing/not available in bioconda or check your arguments."  1>&2
+	 echo "jvarkit jar file '${JAR_DIR}/${jar_name}.jar' missing/not available in bioconda or check your arguments."  1>&2
 	 exit 1
 fi
 
