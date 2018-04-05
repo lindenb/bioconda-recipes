@@ -20,12 +20,12 @@ source:
 
 requirements:
   build:
-      - java-jdk >=8,<9
+      - openjdk >=8,<9
       - wget
       - make
       - unzip
   run:
-      - java-jdk >=8,<9
+      - openjdk >=8,<9
       - awk
 
 test:
@@ -53,7 +53,4 @@ test:
       - jvarkit vcffilterso -h
       - jvarkit xsltstream -h
 
-extra:
-    skip-lints:
-      - uses_javajdk
 
