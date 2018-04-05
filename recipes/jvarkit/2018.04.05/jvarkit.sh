@@ -71,9 +71,9 @@ then
 	 exit 1
 fi
 
-if [ ! -f "${JAR_DIR}/${jar_name}.jar" ]
+if [ ! -f "${JAR_DIR}/${jar_name}-fat.jar" ]
 then
-	find "${JAR_DIR}" -type f 1>&2
+	 find "${JAR_DIR}" -type f -name "*.jar"  1>&2
 	 echo "jvarkit jar file '${JAR_DIR}/${jar_name}.jar' missing/not available in bioconda or check your arguments."  1>&2
 	 exit 1
 fi
@@ -83,8 +83,8 @@ fi
 
 if [[ ${pass_arr[0]:=} == org* ]]
 then
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/${jar_name}.jar" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/${jar_name}-fat.jar" $pass_args
 else
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/${jar_name}.jar" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/${jar_name}-fat.jar" $pass_args
 fi
 exit
