@@ -20,12 +20,12 @@ source:
 
 requirements:
   build:
-      - oraclejdk8
+      - java-jdk >=8,<9
       - wget
       - make
       - unzip
   run:
-      - oraclejdk8
+      - java-jdk >=8,<9
       - awk
 
 test:
@@ -57,4 +57,3 @@ test:
 extra:
    skip-lints:
       - uses_javajdk
-
