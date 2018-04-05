@@ -4,6 +4,9 @@
 
 set -eu -o pipefail
 
+# let's see what appends
+set -x
+
 set -o pipefail
 export LC_ALL=en_US.UTF-8
 
