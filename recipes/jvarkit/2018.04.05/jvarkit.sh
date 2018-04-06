@@ -36,13 +36,13 @@ jar_name=""
 for arg in "$@"; do
     case $arg in
         '-J-D'*)
-            jvm_prop_opts="$jvm_prop_opts $arg"
+            jvm_prop_opts="$jvm_prop_opts ${arg:2}"
             ;;
         '-J-XX'*)
-            jvm_prop_opts="$jvm_prop_opts $arg"
+            jvm_prop_opts="$jvm_prop_opts ${arg:2}"
             ;;
          '-J-Xm'*)
-            jvm_mem_opts="$jvm_mem_opts $arg"
+            jvm_mem_opts="$jvm_mem_opts ${arg:2}"
             ;;
          *)
             # first argument is the name of the jvarkit tool
