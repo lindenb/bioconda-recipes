@@ -1,0 +1,43 @@
+{% set version = "5.6.1" %}
+
+package:
+  name: varlociraptor
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  url: https://github.com/varlociraptor/varlociraptor/archive/v{{ version }}.tar.gz
+  sha256: 96cf6ecf1e4cbfe0511c752d4469d5087e12f0ce542081364c25a440f5cfc714
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - rust >=1.54
+    - pkg-config
+    - make
+    - cmake
+  host:
+    - gsl
+    - libcblas
+    - openssl
+    - zlib
+    - bzip2
+    - xz
+    - clangdev
+    - blis
+  run:
+    - blis
+
+test:
+  commands:
+    - varlociraptor -h
+
+about:
+  home: https://varlociraptor.github.io
+  license: GPLv3
+  license_family: GPL
+  summary: Flexible, uncertainty-aware variant calling with parameter free filtration via FDR control.

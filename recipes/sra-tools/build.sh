@@ -1,69 +1,64 @@
-#!/bin/bash
+#!/bin/bash -e
 
-NGS_SDK_VERSION=1.3.0
-NCBI_VDB_VERSION=2.8.2-2
-
-NGS_SDK_SHA256=803c650a6de5bb38231d9ced7587f3ab788b415cac04b0ef4152546b18713ef2
-NGS_VDB_SHA256=7866f7abf00e35faaa58eb3cdc14785e6d42bde515de4bb3388757eb0c8f3c95
+NCBI_OUTDIR=$SRC_DIR/ncbi-outdir
 
 
-curl -L https://github.com/ncbi/ngs/archive/${NGS_SDK_VERSION}.tar.gz \
-	> ngs-sdk-${NGS_SDK_VERSION}.tar.gz
-curl -L https://github.com/ncbi/ncbi-vdb/archive/${NCBI_VDB_VERSION}.tar.gz \
-	> ncbi-vdb-${NCBI_VDB_VERSION}.tar.gz
+echo "compiling ncbi-vdb"
+pushd ncbi-vdb
 
-[[ $NGS_SDK_SHA256 == $(cat ngs-sdk-${NGS_SDK_VERSION}.tar.gz |shasum -a 256| cut -f1 -d ' ') ]] && echo "NGS SDK Download success" || exit 1
-[[ $NGS_VDB_SHA256 == $(cat ncbi-vdb-${NCBI_VDB_VERSION}.tar.gz |shasum -a 256| cut -f1 -d ' ') ]] && echo "NCBI VDB Download success" || exit 1
+# TODO: Ideally, we don't want the dynamic prefix-dependent patching below.
+#       The following hard-codes the environment's path in binaries such that
+#       those binaries have to be patched upon installation by conda
+#       (with the usual downsides, e.g., being excluded from hard-linking).
+#       This patch applies to a library which is statically linked such that
+#       nearly all binaries of the package are affected by this.
+{
+cat <<end-of-patch
+--- libs/kns/tls.c
++++ libs/kns/tls.c
+@@ -431,4 +431,5 @@
+         const char * root_ca_paths [] =
+         {
++            "${PREFIX}/ssl/cacert.pem", /* conda-forge::ca-certificates */
+             "/etc/ssl/certs/ca-certificates.crt",                /* Debian/Ubuntu/Gentoo etc */
+             "/etc/pki/tls/certs/ca-bundle.crt",                  /* Fedora/RHEL */
+end-of-patch
+} | patch -p0 -i-
 
-mkdir -p ngs-sdk
-mkdir -p ncbi-vdb
+export CFLAGS="${CFLAGS} -DH5_USE_110_API"
+cmake -DNGS_INCDIR=${PREFIX} -DCMAKE_BUILD_TYPE=Release
+cmake --build . --verbose
 
-tar xzf ngs-sdk-${NGS_SDK_VERSION}.tar.gz -C ngs-sdk
-tar xzf ncbi-vdb-${NCBI_VDB_VERSION}.tar.gz -C ncbi-vdb
+popd
 
-SRC_SDK=$SRC_DIR/ngs-sdk/ngs-${NGS_SDK_VERSION}
-SRC_VDB=$SRC_DIR/ncbi-vdb/ncbi-vdb-${NCBI_VDB_VERSION}
+echo "compiling sra-tools"
+pushd sra-tools
 
-
-if [[ $OSTYPE == darwin* ]]; then
-     export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
+if [[ $OSTYPE == "darwin"* ]]; then
+    export CFLAGS="-DTARGET_OS_OSX $CFLAGS"
+    export CXXFLAGS="-DTARGET_OS_OSX $CXXFLAGS"
 fi
 
-####
-# build ngs-sdk
-####
+mkdir -p obj/ngs/ngs-java/javadoc/ngs-doc  # prevent error on OSX
+export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+cmake -DVDB_BINDIR=${SRC_DIR}/ncbi-vdb/bin \
+    -DVDB_LIBDIR=${SRC_DIR}/ncbi-vdb/lib \
+    -DVDB_INCDIR=${SRC_DIR}/ncbi-vdb/interfaces \
+    -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+    -DCMAKE_BUILD_TYPE=Release
+cmake --build . --verbose
+cmake --install .
+popd
 
-cd $SRC_SDK
-# First configure fails
-# See: https://github.com/ncbi/ngs/issues/1
-export ROOT=$PREFIX
-mkdir -p $PREFIX/usr/include
-./configure --prefix=$PREFIX/ --build=$PREFIX/share/ncbi
-make -C ngs-sdk
-
-./configure --prefix=$PREFIX/ --build=$PREFIX/share/ncbi
-make -C ngs-sdk install
-
-####
-# build ncbi-vdb
-####
-
-cd $SRC_VDB
-./configure --prefix=$PREFIX/ \
-	    --build=$PREFIX/share/ncbi \
-            --with-ngs-sdk-prefix=$PREFIX
-make install
-
-####
-# build sra-tools
-####
-
-cd $SRC_DIR
-export VDB_SRCDIR=$SRC_VDB
-./configure --prefix=$PREFIX \
-	--build=$PREFIX/share/ncbi/ \
-	--with-ncbi-vdb-sources=$SRC_VDB \
-	--with-ncbi-vdb-build=$PREFIX/share/ncbi \
-	--with-ngs-sdk-prefix=$PREFIX
-
-make install
+# Strip package version from binary names
+cd "${PREFIX}/bin"
+for exe in \
+    fastq-dump-orig \
+    fasterq-dump-orig \
+    prefetch-orig \
+    sam-dump-orig \
+    srapath-orig \
+    sra-pileup-orig
+do
+    ln -s "${exe}.${PKG_VERSION}" "${exe}"
+done

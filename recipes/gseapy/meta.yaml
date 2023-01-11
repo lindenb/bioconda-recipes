@@ -1,38 +1,32 @@
 package:
   name: gseapy
-  version: "0.9.3"
+  version: "1.0.3"
 
 source:
-  fn: gseapy-0.9.2.tar.gz
-  url: https://pypi.python.org/packages/c7/7c/71151232d761e8e1ca4d8a859e78c0eda7ec2d1efc858c11ab388f43e5b3/gseapy-0.9.3.tar.gz
-  sha256: 113d353c5f2aeb3b17289d056198029fd137e7c0dafb6a387d0444753c24d341
+  url: https://files.pythonhosted.org/packages/03/f5/a86e563e7c3802cdb47a9d9c2aaff095468a06844742429e230f969edc1d/gseapy-1.0.3.tar.gz
+  sha256: 66b72d1ef2740b60f28c668c320e4f817a1686c5ab74a518e979e5e982c51c58
 
 build:
   entry_points:
     - gseapy = gseapy.__main__:main
+  skip: True  # [py2k or py == 36 ]
   number: 0
 
 requirements:
-  build:
+  build: 
+    - {{ compiler('rust') }}
+  host:
     - python
+    - wheel
     - setuptools
-    - numpy >=1.13.0
-    - pandas >=0.16
-    - matplotlib >=1.4.3
-    - beautifulsoup4 >=4.4.1
-    - requests
-    - lxml
-    - html5lib
-
+    - setuptools-rust
   run:
     - python
     - numpy >=1.13.0
+    - scipy
     - pandas >=0.16
-    - matplotlib >=1.4.3
-    - beautifulsoup4 >=4.4.1
+    - matplotlib-base >=1.4.3
     - requests
-    - lxml
-    - html5lib
 
 test:
   imports:
@@ -41,7 +35,7 @@ test:
     - gseapy --help
 
 about:
-  home: https://github.com/BioNinja/gseapy
+  home: https://github.com/zqfang/gseapy
   license: MIT License
   summary: 'Gene Set Enrichment Analysis in Python'
   license_family: MIT

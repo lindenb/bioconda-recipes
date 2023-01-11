@@ -1,18 +1,24 @@
-#!/bin/bash
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="-L${PREFIX}/lib"
-export CPPFLAGS="-I${PREFIX}/include"
-export CFLAGS="-I$PREFIX/include"
-export CPATH=${PREFIX}/include
+#!/usr/bin/env bash
 
+set -e -o pipefail -x
 
-# stack relies on $HOME, so fake it:
-mkdir -p fake-home
-export HOME=$PWD/fake-home
-export STACK_ROOT="$HOME/.stack"
-stack setup --local-bin-path ${PREFIX}/bin
-make install prefix=$PREFIX
+if [ "$(uname)" == "Darwin" ]; then
+    BINARY=ngless
+else
+    BINARY=NGLess-v${PKG_VERSION}-Linux-static-no-deps
+fi
 
-#cleanup
-rm -r .stack-work
+mkdir -p ${PREFIX}/bin/
+chmod +x ${BINARY}
+cp -pir ${BINARY} ${PREFIX}/bin/ngless-wrapped
+cat >> ${PREFIX}/bin/ngless <<EOF
+#!/usr/bin/env bash
+
+export NGLESS_SAMTOOLS_BIN=\${CONDA_PREFIX}/bin/samtools
+export NGLESS_BWA_BIN=\${CONDA_PREFIX}/bin/bwa
+export NGLESS_PRODIGAL_BIN=\${CONDA_PREFIX}/bin/prodigal
+export NGLESS_MEGAHIT_BIN=\${CONDA_PREFIX}/bin/megahit
+export NGLESS_MINIMAP2_BIN=\${CONDA_PREFIX}/bin/minimap2
+
+exec \${CONDA_PREFIX}/bin/ngless-wrapped "\$@"
+EOF

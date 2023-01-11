@@ -1,0 +1,33 @@
+{% set name = "perl-io-zlib" %}
+{% set version = "1.12" %}
+{% set sha256 = "9c4ac86b51c12e9ef864f6bbe648c2f8496283bb31be6d4f122430e1ca2370cc" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://cpan.metacpan.org/authors/id/T/TO/TOMHUGHES/IO-Zlib-1.12.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 0
+
+requirements:
+  build:
+    - make
+    - perl
+
+  run:
+    - perl
+
+test:
+  # Perl 'use' tests
+  imports:
+    - IO::Zlib
+
+about:
+  home: http://metacpan.org/pod/IO::Zlib
+  license: unknown
+  summary: 'IO:: style interface to Compress::Zlib'
